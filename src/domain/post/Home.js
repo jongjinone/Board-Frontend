@@ -14,22 +14,21 @@ const Home = () => {
 
   const [list, setList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sort, setSort] = useState("최신순");
+  const [sort, setSort] = useState("최신순"); //정렬방법
 
   useEffect(() => {
-    getList();
+    getList(); // 정렬방법이 바뀔때마다 게시글 목록을 불러옴.
   }, [sort]);
 
   const getList = () => {
     if (sort === "최신순") {
-      axios.get("/api/posts").then((res) => {
-        let temp = res.data.response;
-        setList(temp);
+      axios.get("/api/posts").then((res) => { //서버와 통신
+        setList(res.data.response); //전달받은 게시글 목록을 저장
       });
-    } else {
+    } else { // 정렬방법이 인기순인 경우
       axios.get("/api/posts").then((res) => {
         let arr = res.data.response;
-        let temp = arr.sort((a, b) => {
+        let temp = arr.sort((a, b) => {    //전달받은 게시물들을 좋아요 순으로 내림차순
           return b.likes.length - a.likes.length;
         });
         setList(temp);
@@ -38,10 +37,10 @@ const Home = () => {
   };
 
   const handleSortChange = (e, newAlignment) => {
-    setSort(newAlignment);
+    setSort(newAlignment); //정렬방법 토글 함수
   };
 
-  const UploadTime = (createTime, updateTime) => {
+  const UploadTime = (createTime, updateTime) => { //생성 및 수정시간 함수
     if (createTime !== updateTime) {
       return (
         moment(updateTime).format("YYYY년 MMMM Do, a hh시 mm분 ss초") +
@@ -52,14 +51,15 @@ const Home = () => {
     }
   };
 
+  //게시물 검색
   const search = (datas) => {
-    return datas.filter(
+    return datas.filter( // 게시물 검색을 위한 필터 함수
       (data) =>
-        data.title
+        data.title        //게시물의 제목을 모두 소문자로 바꾸어 검색어와 비교
           .toString()
           .toLowerCase()
           .indexOf(searchTerm.toString().toLowerCase()) > -1 ||
-        data.content
+        data.content      //게시물의 내용을 모두 소문자로 바꾸어 검색어와 비교
           .toString()
           .toLowerCase()
           .indexOf(searchTerm.toString().toLowerCase()) > -1

@@ -21,7 +21,7 @@ const PostDetail = () => {
   const { postNum } = useParams();
   const [cookie] = useCookies(["sessionKey"]);
   const [content, setContent] = useState("");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); //모달창을 열기 위한 상태 함수
   const [openAlertPostDelete, setOpenAlertPostDelete] = useState(false);
   const [openAlertRepleUpload, setOpenAlertRepleUpload] = useState(false);
   const [openAlertRepleModify, setOpenAlertRepleModify] = useState(false);
@@ -52,19 +52,19 @@ const PostDetail = () => {
 
   const handleAlertPostDeleteClose = (event, reason) => {
     setOpenAlertPostDelete(false);
-    navigate(-1)
+    navigate(-1) //게시글 삭제 Alert이후 이동
   };
 
   const handleAlertRepleUploadClose = (event, reason) => {
-    setOpenAlertRepleUpload(false);
+    setOpenAlertRepleUpload(false); //댓글 작성 Alert
   };
 
   const handleAlertRepleModifyClose = (event, reason) => {
-    setOpenAlertRepleModify(false);
+    setOpenAlertRepleModify(false); //댓글 수정 Alert
   };
 
   const handleAlertRepleDeleteClose = (event, reason) => {
-    setOpenAlertRepleDelete(false);
+    setOpenAlertRepleDelete(false); //댓글 삭제 Alert
   };
 
   const UploadTime = (createTime, updateTime) => {
@@ -81,15 +81,15 @@ const PostDetail = () => {
   //like
   const like = () => {
     let formData = new FormData();
-    formData.append("user_id", cookie.sessionKey);
+    formData.append("user_id", cookie.sessionKey); 
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     };
-    axios
+    axios //로그인된 유저 id세션 전송
       .post(`/api/posts/${postNum}/like`, formData, config)
-      .then((res) => {
+      .then((res) => {  //해당 게시물에 대한 정보를 업데이트 해줌.
         setPostInfo({ ...postInfo, likes: res.data.result.likes });
       })
       .catch((err) => {
@@ -105,25 +105,25 @@ const PostDetail = () => {
         "Content-Type": "multipart/form-data",
       },
     };
-    axios
+    axios //로그인된 유저 id세션 전송
       .post(`/api/posts/${postNum}/unlike`, formData, config)
       .then((res) => {
         setPostInfo({ ...postInfo, likes: res.data.result.likes });
-      })
+      }) //입력받은 정보를 다시 게시물 정보로 업데이트.
       .catch((err) => {
         console.log(err);
       });
   };
 
   //모달창 열기
-  const handleOpen = (idx) => {
-    setOpen(true);
+  const handleOpen = (idx) => { //idx를 전달받아서 
+    setOpen(true); //모달창을 열어줌
     setReple(postInfo.reple[idx]); //선택된  reple의 내용과 id를 reple에 저장
   };
 
   //모달창 닫기
   const handleClose = () => {
-    setOpen(false);
+    setOpen(false); //모달창을 닫아줌
   };
 
   //모달창에서 내용 수정
@@ -134,21 +134,21 @@ const PostDetail = () => {
   //상세 게시물 불러오기
   useEffect(() => {
     axios
-      .get(`/api/posts/${postNum}`)
+      .get(`/api/posts/${postNum}`) //해당 번호의 게시물에 요청
       .then((res) => {
-        setPostInfo(res.data);
+        setPostInfo(res.data); //전달받은 게시물 데이터를 저장함.
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [postNum]);
+  }, [postNum]); //게시물 번호가 변할 때마다 실행.
 
   //게시물 삭제
   const postDelete = () => {
     axios
-      .delete(`/api/posts/${postNum}/delete`)
+      .delete(`/api/posts/${postNum}/delete`) //삭제 요청
       .then((res) => {
-        setOpenAlertPostDelete(true);
+        setOpenAlertPostDelete(true); // 게시물 삭제 Alert
       })
       .catch((err) => {
         console.log(err);
@@ -157,7 +157,7 @@ const PostDetail = () => {
 
   //댓글 작성
   const repleSub = () => {
-    if (!content) return;
+    if (!content) return; // 댓글이 없는 경우 돌아감
     let formData = new FormData();
     formData.append("content", content);
     formData.append("user_id", cookie.sessionKey);
@@ -166,13 +166,13 @@ const PostDetail = () => {
         "Content-Type": "multipart/form-data",
       },
     };
-    axios
+    axios //댓글의 내용과 작성자의 id를 전송함.
       .post(`/api/posts/${postNum}/reple/submit`, formData, config)
       .then((res) => {
         if (res.data.status === 1) {
           setPostInfo({ ...postInfo, reple: res.data.reple }); // postInfo.reple에는 댓글 배열이 들어감.
-          setContent("");
-          setOpenAlertRepleUpload(true);
+          setContent(""); //전송받은 댓글정보를 해당 게시물 정보에 저장
+          setOpenAlertRepleUpload(true); //댓글작성 Alert
         }
       })
       .catch((err) => {
@@ -182,7 +182,7 @@ const PostDetail = () => {
 
   //댓글 수정
   const repleModify = () => {
-    if (!reple.content) return;
+    if (!reple.content) return; //댓글의 내용이 없는 경우 돌려보냄
 
     let formData = new FormData();
     formData.append("content", reple.content);
@@ -192,14 +192,14 @@ const PostDetail = () => {
         "Content-Type": "multipart/form-data",
       },
     };
-    axios
+    axios // 댓글의 내용과 댓글의 id를 전송
       .post(`/api/posts/${postNum}/reple/modify`, formData, config)
       .then((res) => {
         if (res.data.status === 1) {
           setPostInfo({ ...postInfo, reple: res.data.reple });
-          setContent("");
-          setOpen(false);
-          setOpenAlertRepleModify(true);
+          setContent(""); //전달받은 게시물에 대한 정보를 업데이트함.
+          setOpen(false); //댓글 수정 모달창을 닫음
+          setOpenAlertRepleModify(true); //댓글수정 Alert
         }
       })
       .catch((err) => {
@@ -216,12 +216,12 @@ const PostDetail = () => {
         "Content-Type": "multipart/form-data",
       },
     };
-    axios
+    axios //index를 통해 게시물의 특정 댓글 id를 담아서 전송
       .post(`/api/posts/${postNum}/reple/delete`, formData, config)
       .then((res) => {
-        if (res.data.success === true) {
+        if (res.data.success === true) { //전달받은 댓글을 게시물 정보에 업데이트 
           setPostInfo({ ...postInfo, reple: res.data.reples });
-          setOpenAlertRepleDelete(true)
+          setOpenAlertRepleDelete(true) //댓글 삭제 Alert
         }
       })
       .catch((err) => {

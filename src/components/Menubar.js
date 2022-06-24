@@ -6,7 +6,7 @@ const Menubar = (props) => {
   const navigate = useNavigate();
   const [cookie, ,removeCookie] = useCookies(["sessionKey", "username"])
 
-  const logout = () => {
+  const logout = () => { //로그아웃 시 쿠키를 모두 제거해 줌.
     removeCookie("sessionKey", { path: '/' });
     removeCookie("username", { path: '/' });
   };

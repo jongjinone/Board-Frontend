@@ -24,28 +24,28 @@ const PostDetailForm = (props) => {
         </div>
         <div>
           {props.UploadTime(props.postInfo.createdAt, props.postInfo.updatedAt)}
-          {props.postInfo.likes.some(v=> v.user_id===cookie.sessionKey) ? 
-              <Favorite 
+          {props.postInfo.likes.some(v=> v.user_id===cookie.sessionKey) ? //해당 유저가 게시물 안의 유저들 안에 포함되어 있는지 확인
+              <Favorite  //포함되어 있으면(좋아요 클릭) 꽉 찬하트 
               color="error" 
               style={{
                 marginLeft:"7px", 
                 transform: 'translate(0%, 25%)',
                 cursor: "pointer"
               }}
-              onClick={props.unlike}
+              onClick={props.unlike} //좋아요가 눌려있는 상태에서 누르면 unlike 
               /> :
-              <FavoriteBorder 
+              <FavoriteBorder //포함되어 있지 않으면(좋아요 클릭x) 빈하트 
               color="error" 
               style={{
                 marginLeft:"7px", 
                 transform: 'translate(0%, 25%)',
                 cursor: "pointer"
               }}
-              onClick={()=>{props.like()}}
+              onClick={()=>{props.like()}} //좋아요가 안눌려있는 상태에서 누르면 like
               />
-              } {props.postInfo.likes.length}
+              } {props.postInfo.likes.length } {/*좋아요안의 유저수를 통해 좋아요 수 표시 */}
         </div>
-        {props.postInfo.user_id === cookie.sessionKey && (
+        {props.postInfo.user_id === cookie.sessionKey && ( //게시글 작성자와 현재 유저가 같다면 수정 삭제가 가능함.
           <div style={{ marginTop: "20px", marginBottom: "20px" }}>
             <Button
               onClick={() => navigate(`/post/${props.postInfo.postNum}/modify`)}
